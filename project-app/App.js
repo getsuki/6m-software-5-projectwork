@@ -22,6 +22,7 @@ export default function App() {
     title: 'My Trip',
     startDate: new Date(),
     endDate: new Date(),
+    allDay: true, // Set allDay to true for an all-day event
     location: 'Destination City',
     description: 'Trip description',
     timeZone: 'America/New_York',

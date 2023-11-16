@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Calendar from 'expo-calendar';
+import ImagePicker from 'react-native-image-picker';
+import Modal from 'react-native-modal';
 
 export default function App() {
   const [calendarId, setCalendarId] = useState(null);
@@ -27,6 +29,9 @@ export default function App() {
     description: 'Trip description',
     timeZone: 'America/New_York',
   });
+
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isImageModalVisible, setImageModalVisible] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -102,6 +107,28 @@ export default function App() {
     }
   };
 
+  const handleImagePick = () => {
+    const options = {
+      title: 'Select Image',
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+
+    ImagePicker.showImagePicker(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error:', response.error);
+      } else {
+        console.log('ImagePicker Response:', response);
+        setSelectedImage(response.uri);
+        setImageModalVisible(true);
+      }
+    });
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
@@ -130,34 +157,4 @@ export default function App() {
 
         <Text>Description:</Text>
         <TextInput
-          style={{ height: 80, borderColor: 'gray', borderWidth: 1, margin: 10, padding: 5 }}
-          multiline
-          onChangeText={handleDescriptionChange}
-          value={tripDetails.description}
-        />
-
-        {showStartDatePicker && (
-          <DateTimePicker
-            value={tripDetails.startDate}
-            mode="date"
-            display="default"
-            onChange={handleStartDateChange}
-          />
-        )}
-
-        {showEndDatePicker && (
-          <DateTimePicker
-            value={tripDetails.endDate}
-            mode="date"
-            display="default"
-            onChange={handleEndDateChange}
-          />
-        )}
-
-        <Button title="Add Trip to Calendar" onPress={addTripToCalendar} />
-
-        {tripAdded && <Text style={{ color: 'green' }}>Added to Calendar</Text>}
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
-  );
-}
+          style={{ height: 80, borderColor: 'gray',
